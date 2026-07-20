@@ -1,14 +1,17 @@
-"""Claude Sonnet 4.6 calls via Emergent LLM key: discovery, brief, documents."""
+"""Claude (Anthropic) calls: discovery, brief, documents.
+
+Uses the official Anthropic SDK with your own ANTHROPIC_API_KEY, so the app has
+no dependency on any hosting provider and can be self-hosted anywhere.
+"""
 import os
 import json
 import re
-import uuid
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from anthropic import AsyncAnthropic
 
 from domain import TRACK_MAP, PROFILE_SUMMARY
 
-API_KEY = os.environ["EMERGENT_LLM_KEY"]
-MODEL = ("anthropic", "claude-sonnet-4-6")
+MODEL = os.environ.get("CLAUDE_MODEL", "claude-sonnet-4-6")
+client = AsyncAnthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
 
 def _sanitize(text):
@@ -17,12 +20,15 @@ def _sanitize(text):
     return text.replace("\u2014", "-").replace("\u2013", "-")
 
 
-def _chat(system_message):
-    return LlmChat(
-        api_key=API_KEY,
-        session_id=f"phd-{uuid.uuid4()}",
-        system_message=system_message,
-    ).with_model(*MODEL)
+async def _complete(system, prompt, max_tokens=4096):
+    resp = await client.messages.create(
+        model=MODEL,
+        max_tokens=max_tokens,
+        system=system,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    parts = [b.text for b in resp.content if getattr(b, "type", None) == "text"]
+    return _sanitize("".join(parts))
 
 
 def _extract_json(text):
@@ -63,9 +69,8 @@ For each professor return an object with EXACTLY these fields:
 
 Return a JSON array of {count} objects. No text outside the array."""
 
-    chat = _chat(system)
-    resp = await chat.send_message(UserMessage(text=prompt))
-    data = _extract_json(_sanitize(resp))
+    text = await _complete(system, prompt, max_tokens=2048)
+    data = _extract_json(text)
     cleaned = []
     for d in data:
         if not isinstance(d, dict) or not d.get("name"):
@@ -105,9 +110,7 @@ Write a one-page brief in Markdown with these sections:
 ## Why This Lab Fits Radhika
 ## Best Hook Angle for the Email
 ## Watch-Out Flags"""
-    chat = _chat(system)
-    resp = await chat.send_message(UserMessage(text=prompt))
-    return _sanitize(resp)
+    return await _complete(system, prompt, max_tokens=2048)
 
 
 DOC_SPECS = {
@@ -156,6 +159,4 @@ University: {prof.get('university')}
 Focus: {prof.get('focus')}
 Recent papers: {', '.join(prof.get('recent_papers') or []) or 'n/a'}
 """
-    chat = _chat(system)
-    resp = await chat.send_message(UserMessage(text=prompt))
-    return _sanitize(resp)
+    return await _complete(system, prompt, max_tokens=4096)

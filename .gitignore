@@ -86,3 +86,11 @@ android-sdk/
 credentials.json
 *.key
 .credentials
+
+# Keep example env templates committed
+!.env.example
+!**/.env.example
+
+# Generated docs
+generated_docs/
+
