@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: phd-agent-backend
+    env: python
+    plan: starter
+    buildCommand: "pip install -r backend/requirements-prod.txt"
+    startCommand: "cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: MONGO_URL
+        value: "mongodb+srv://<username>:<password>@<cluster>/<database>?retryWrites=true&w=majority"
+      - key: DB_NAME
+        value: "phd_agent"
+      - key: ANTHROPIC_API_KEY
+        value: ""
+      - key: CORS_ORIGINS
+        value: "https://jainsidhanth.github.io"
