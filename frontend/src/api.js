@@ -12,6 +12,7 @@ export const api = {
   discover: (data) => client.post("/discover", data).then((r) => r.data),
   getProfessors: () => client.get("/professors").then((r) => r.data),
   getBrief: (id) => client.post(`/professors/${id}/brief`).then((r) => r.data),
+  getDocuments: (id) => client.get(`/professors/${id}/documents`).then((r) => r.data),
   generateDoc: (id, docType) => client.post(`/professors/${id}/generate/${docType}`).then((r) => r.data),
   updateRank: (id, rank) => client.patch(`/professors/${id}/rank`, { rank }).then((r) => r.data),
   downloadUrl: (id, docType) => `${API}/professors/${id}/download/${docType}`,

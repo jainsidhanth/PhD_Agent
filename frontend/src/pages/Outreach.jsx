@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import {
@@ -14,6 +14,25 @@ function Card({ prof, reload }) {
   const [pkg, setPkg] = useState(null);
   const [busy, setBusy] = useState("");
   const [progress, setProgress] = useState("");
+
+  useEffect(() => {
+    const initial = {};
+    if (prof.outreach?.draft_subject !== undefined) {
+      initial.subject = prof.outreach.draft_subject;
+      initial.body = prof.outreach.draft_body;
+    }
+    api.getDocuments(prof.id).then((docs) => {
+      const done = {};
+      docs.forEach((d) => { done[d.doc_type] = d.content_md; });
+      if (Object.keys(done).length || Object.keys(initial).length) {
+        setPkg((prev) => ({ ...(prev || {}), ...initial, done: { ...(prev?.done || {}), ...done } }));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prof.id]);
+
+  const alreadyBriefed = !!brief;
+  const alreadyPackaged = !!(pkg?.done && ["cv", "sop", "proposal", "email"].every((k) => pkg.done[k]));
 
   const doBrief = async () => {
     setBusy("brief");
@@ -109,7 +128,7 @@ function Card({ prof, reload }) {
                   className="inline-flex items-center gap-2 bg-[#F8F5F0] text-[#A64B2A] border border-[#A64B2A] hover:bg-[#F0EBE1] transition-colors px-5 py-2 rounded-md font-medium text-sm disabled:opacity-60"
                 >
                   {busy === "brief" ? <Sparkle size={16} className="animate-spin" /> : <ClipboardText size={16} />}
-                  1. Generate Brief
+                  {alreadyBriefed ? "Regenerate Brief" : "1. Generate Brief"}
                 </button>
                 <button
                   data-testid={`generate-package-btn-${prof.id}`}
@@ -117,7 +136,7 @@ function Card({ prof, reload }) {
                   className="inline-flex items-center gap-2 bg-[#E6A64B] text-[#2A2522] hover:bg-[#D5963E] transition-colors px-5 py-2 rounded-md font-medium text-sm disabled:opacity-60"
                 >
                   {busy === "package" ? <Sparkle size={16} className="animate-spin" /> : <FileText size={16} />}
-                  2. Generate Package
+                  {alreadyPackaged ? "Regenerate Package" : "2. Generate Package"}
                 </button>
                 {progress && <span className="self-center text-xs text-[#8A8179]">{progress}</span>}
               </div>
@@ -129,21 +148,26 @@ function Card({ prof, reload }) {
               )}
 
               {pkg && (
-                <div className="space-y-3" data-testid={`package-content-${prof.id}`}>
-                  <div className="flex gap-2 flex-wrap">
-                    {["cv", "sop", "proposal"].map((k) => (
-                      pkg.done && pkg.done[k] ? (
-                        <a
-                          key={k}
-                          href={api.downloadUrl(prof.id, k)}
-                          data-testid={`download-${k}-${prof.id}`}
-                          className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-[#6FA3A6]/10 text-[#4d7a7c] border border-[#6FA3A6]/30 hover:bg-[#6FA3A6]/20 transition-colors"
-                        >
-                          <DownloadSimple size={14} weight="bold" /> {k.toUpperCase()}.docx
-                        </a>
-                      ) : null
-                    ))}
-                  </div>
+                <div className="space-y-4" data-testid={`package-content-${prof.id}`}>
+                  {["cv", "sop", "proposal"].map((k) => (
+                    pkg.done && pkg.done[k] ? (
+                      <div key={k} className="bg-[#FDFCFB] border border-[#E5E0D8] rounded-lg p-5 prose-brief">
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="text-xs font-semibold tracking-[0.1em] uppercase text-[#6FA3A6]">
+                            {k.toUpperCase()}
+                          </label>
+                          <a
+                            href={api.downloadUrl(prof.id, k)}
+                            data-testid={`download-${k}-${prof.id}`}
+                            className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-[#6FA3A6]/10 text-[#4d7a7c] border border-[#6FA3A6]/30 hover:bg-[#6FA3A6]/20 transition-colors"
+                          >
+                            <DownloadSimple size={14} weight="bold" /> Download .docx
+                          </a>
+                        </div>
+                        <ReactMarkdown>{pkg.done[k]}</ReactMarkdown>
+                      </div>
+                    ) : null
+                  ))}
                   {pkg.subject !== undefined && (
                   <>
                   <div className="flex items-center justify-between">
