@@ -13,6 +13,8 @@ export const api = {
   getProfessors: () => client.get("/professors").then((r) => r.data),
   getBrief: (id) => client.post(`/professors/${id}/brief`).then((r) => r.data),
   generateDoc: (id, docType) => client.post(`/professors/${id}/generate/${docType}`).then((r) => r.data),
+  updateRank: (id, rank) => client.patch(`/professors/${id}/rank`, { rank }).then((r) => r.data),
+  downloadUrl: (id, docType) => `${API}/professors/${id}/download/${docType}`,
   pending: () => client.get("/outreach/pending").then((r) => r.data),
   history: () => client.get("/outreach/history").then((r) => r.data),
   markSent: (id) => client.post(`/outreach/${id}/send`).then((r) => r.data),

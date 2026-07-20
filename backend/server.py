@@ -1,8 +1,11 @@
 from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import io
+import re
 import logging
 import uuid
 from pathlib import Path
@@ -13,8 +16,9 @@ from datetime import datetime, timezone
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-from domain import TRACKS, TRACK_MAP, DEFAULT_PROFILE, score_professor
+from domain import TRACKS, TRACK_MAP, DEFAULT_PROFILE, score_professor, _rank_score
 import llm_service
+from docgen import markdown_to_docx
 
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -36,6 +40,11 @@ def now_iso():
 class DiscoverRequest(BaseModel):
     per_track: int = 2
     only_track: Optional[str] = None
+
+
+class RankUpdate(BaseModel):
+    rank: Optional[int] = None
+
 
 
 class ProfileUpdate(BaseModel):
@@ -156,6 +165,43 @@ async def get_professor(prof_id: str):
     if not p:
         raise HTTPException(404, "Professor not found")
     return p
+
+
+@api_router.patch("/professors/{prof_id}/rank")
+async def update_rank(prof_id: str, payload: RankUpdate):
+    p = await db.professors.find_one({"id": prof_id}, {"_id": 0})
+    if not p:
+        raise HTTPException(404, "Professor not found")
+    rank = payload.rank
+    score_program = _rank_score(rank)
+    await db.professors.update_one(
+        {"id": prof_id}, {"$set": {"rank": rank, "score_program": score_program}})
+    p["rank"] = rank
+    p["score_program"] = score_program
+    return p
+
+
+def _slug(name):
+    return re.sub(r"[^A-Za-z0-9]+", "_", name or "professor").strip("_")
+
+
+@api_router.get("/professors/{prof_id}/download/{doc_type}")
+async def download_doc(prof_id: str, doc_type: str):
+    if doc_type not in ("cv", "sop", "proposal"):
+        raise HTTPException(400, "Invalid doc_type")
+    prof = await db.professors.find_one({"id": prof_id}, {"_id": 0})
+    doc = await db.documents.find_one({"professor_id": prof_id, "doc_type": doc_type}, {"_id": 0})
+    if not doc:
+        raise HTTPException(404, "Document not generated yet")
+    title_map = {"cv": "Curriculum Vitae", "sop": "Statement of Purpose", "proposal": "Research Proposal"}
+    data = markdown_to_docx(doc["content_md"], title=title_map[doc_type])
+    prof_slug = _slug(prof.get("name") if prof else "professor")
+    filename = f"{prof_slug}_{doc_type}.docx"
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @api_router.post("/professors/{prof_id}/brief")

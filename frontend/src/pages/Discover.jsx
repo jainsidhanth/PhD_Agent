@@ -5,6 +5,48 @@ import { toast } from "sonner";
 import { api } from "../api";
 import { ScoreBar, CompactBar, TakingBadge, TrackChip } from "../components/Shared";
 
+function RankCell({ prof, reload }) {
+  const [val, setVal] = useState(prof.rank ?? "");
+  const [editing, setEditing] = useState(false);
+
+  const save = async () => {
+    setEditing(false);
+    const rank = val === "" ? null : parseInt(val, 10);
+    if (rank === (prof.rank ?? null)) return;
+    await api.updateRank(prof.id, Number.isNaN(rank) ? null : rank);
+    toast.success("Program rank updated");
+    reload();
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <CompactBar value={prof.score_program} />
+      {editing ? (
+        <input
+          autoFocus
+          type="number"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          onBlur={save}
+          onKeyDown={(e) => e.key === "Enter" && save()}
+          placeholder="#"
+          data-testid={`rank-input-${prof.id}`}
+          className="w-14 text-xs font-mono border border-[#E5E0D8] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#6FA3A6]"
+        />
+      ) : (
+        <button
+          onClick={() => setEditing(true)}
+          data-testid={`rank-edit-${prof.id}`}
+          className="text-xs font-mono text-[#8A8179] hover:text-[#A64B2A] border border-dashed border-[#E5E0D8] rounded px-1.5 py-0.5"
+          title="Edit QS/THE rank"
+        >
+          {prof.rank ? `#${prof.rank}` : "rank"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Discover({ professors, tracks, reload }) {
   const [perTrack, setPerTrack] = useState(2);
   const [onlyTrack, setOnlyTrack] = useState("");
@@ -119,7 +161,7 @@ export default function Discover({ professors, tracks, reload }) {
                     <td className="py-3 px-4"><CompactBar value={p.score_research} /></td>
                     <td className="py-3 px-4"><CompactBar value={p.score_methods} /></td>
                     <td className="py-3 px-4"><CompactBar value={p.score_lab_activity} /></td>
-                    <td className="py-3 px-4"><CompactBar value={p.score_program} /></td>
+                    <td className="py-3 px-4"><RankCell prof={p} reload={reload} /></td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <div className="score-track" style={{ maxWidth: 90 }}>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import {
-  CaretDown, FileText, PaperPlaneTilt, XCircle, ClipboardText, Copy, CheckCircle, Sparkle,
+  CaretDown, FileText, PaperPlaneTilt, XCircle, ClipboardText, Copy, CheckCircle, Sparkle, DownloadSimple,
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { api } from "../api";
@@ -133,9 +133,14 @@ function Card({ prof, reload }) {
                   <div className="flex gap-2 flex-wrap">
                     {["cv", "sop", "proposal"].map((k) => (
                       pkg.done && pkg.done[k] ? (
-                        <span key={k} className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-[#6FA3A6]/10 text-[#4d7a7c] border border-[#6FA3A6]/30">
-                          <CheckCircle size={14} weight="fill" /> {k.toUpperCase()} ready
-                        </span>
+                        <a
+                          key={k}
+                          href={api.downloadUrl(prof.id, k)}
+                          data-testid={`download-${k}-${prof.id}`}
+                          className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-[#6FA3A6]/10 text-[#4d7a7c] border border-[#6FA3A6]/30 hover:bg-[#6FA3A6]/20 transition-colors"
+                        >
+                          <DownloadSimple size={14} weight="bold" /> {k.toUpperCase()}.docx
+                        </a>
                       ) : null
                     ))}
                   </div>
