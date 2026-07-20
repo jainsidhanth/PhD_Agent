@@ -40,6 +40,7 @@ def now_iso():
 class DiscoverRequest(BaseModel):
     per_track: int = 2
     only_track: Optional[str] = None
+    region: Optional[str] = None
 
 
 class RankUpdate(BaseModel):
@@ -109,12 +110,13 @@ async def discover(req: DiscoverRequest):
     profile = await get_profile_doc()
     per_track = max(1, min(5, req.per_track))
     track_keys = [req.only_track] if req.only_track and req.only_track in TRACK_MAP else [t["key"] for t in TRACKS]
+    region = req.region if req.region in ("us", "europe") else None
 
     created = []
     errors = []
     for tk in track_keys:
         try:
-            found = await llm_service.discover_professors(tk, per_track, profile.get("summary"))
+            found = await llm_service.discover_professors(tk, per_track, profile.get("summary"), region)
         except Exception as e:
             logger.exception("discover failed for %s", tk)
             errors.append(f"{tk}: {e}")
@@ -135,6 +137,7 @@ async def discover(req: DiscoverRequest):
                 "recent_papers": f.get("recent_papers", []),
                 "taking_students": f.get("taking_students", "unknown"),
                 "rank": f.get("rank"),
+                "region": region,
                 "brief_md": None,
                 "created_at": now_iso(),
                 **scores,

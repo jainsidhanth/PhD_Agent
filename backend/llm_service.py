@@ -43,7 +43,10 @@ def _extract_json(text):
     return json.loads(text)
 
 
-async def discover_professors(track_key, count, profile_summary=None):
+REGION_LABELS = {"us": "the United States", "europe": "Europe"}
+
+
+async def discover_professors(track_key, count, profile_summary=None, region=None):
     track = TRACK_MAP[track_key]
     profile_summary = profile_summary or PROFILE_SUMMARY
     system = (
@@ -53,8 +56,11 @@ async def discover_professors(track_key, count, profile_summary=None):
         "researchers in cognitive neuroscience and psychology. "
         "Never use em-dashes or en-dashes; use a hyphen. Output ONLY a valid JSON array, no prose."
     )
+    region_line = ""
+    if region in REGION_LABELS:
+        region_line = f'\nRestrict results to universities located in {REGION_LABELS[region]}. Do not include professors from any other region.'
     prompt = f"""Find {count} professors who supervise PhD students in the research area: "{track['label']}".
-
+{region_line}
 Applicant background (for relevance): {profile_summary}
 
 For each professor return an object with EXACTLY these fields:

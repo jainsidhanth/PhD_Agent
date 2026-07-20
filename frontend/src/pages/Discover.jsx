@@ -50,12 +50,13 @@ function RankCell({ prof, reload }) {
 export default function Discover({ professors, tracks, reload }) {
   const [perTrack, setPerTrack] = useState(2);
   const [onlyTrack, setOnlyTrack] = useState("");
+  const [region, setRegion] = useState("");
   const [loading, setLoading] = useState(false);
 
   const runDiscover = async () => {
     setLoading(true);
     try {
-      const res = await api.discover({ per_track: Number(perTrack), only_track: onlyTrack || null });
+      const res = await api.discover({ per_track: Number(perTrack), only_track: onlyTrack || null, region: region || null });
       toast.success(`Discovery complete: ${res.created} new professor(s) added`);
       if (res.errors?.length) toast.warning(`${res.errors.length} track(s) had issues`);
       await reload();
@@ -99,6 +100,21 @@ export default function Discover({ professors, tracks, reload }) {
               {tracks.map((t) => (
                 <option key={t.key} value={t.key}>{t.label}</option>
               ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold tracking-[0.1em] uppercase text-[#6FA3A6] mb-2">
+              Region
+            </label>
+            <select
+              data-testid="region-select"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              className="bg-[#FDFCFB] border border-[#E5E0D8] rounded-md px-4 py-2 text-[#2A2522] min-w-[160px] focus:outline-none focus:ring-2 focus:ring-[#6FA3A6]/50"
+            >
+              <option value="">Any region</option>
+              <option value="us">United States</option>
+              <option value="europe">Europe</option>
             </select>
           </div>
           <button
