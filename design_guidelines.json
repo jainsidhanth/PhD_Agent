@@ -1,0 +1,134 @@
+{
+  "theme_mode": "light",
+  "design_concept": {
+    "style": "Academic Precision",
+    "description": "A clean, highly functional dashboard designed for a PhD applicant. It balances dense data presentation with an elegant, academic aesthetic. The design relies on structured bento grids, crisp typography, and a warm, sophisticated color palette that feels organic and focused. Surfaces are flat and solid—avoiding overly digital glassmorphism—to mimic the tactile feel of academic papers and well-organized journals.",
+    "archetype": "Organic & Earthy / Swiss & High-Contrast Hybrid"
+  },
+  "colors": {
+    "background": {
+      "page": "#F8F5F0",
+      "card": "#FFFFFF",
+      "input": "#FDFCFB",
+      "hover": "#F0EBE1"
+    },
+    "text": {
+      "primary": "#2A2522",
+      "secondary": "#5C544E",
+      "heading": "#A64B2A",
+      "muted": "#8A8179"
+    },
+    "brand": {
+      "primary": "#A64B2A",
+      "secondary": "#E6A64B",
+      "accent": "#6FA3A6"
+    },
+    "status": {
+      "success": "#4CAF50",
+      "warning": "#E6A64B",
+      "error": "#D32F2F",
+      "info": "#6FA3A6",
+      "taking_students_yes": "#E8F5E9",
+      "taking_students_yes_text": "#2E7D32",
+      "taking_students_no": "#FFEBEE",
+      "taking_students_no_text": "#C62828",
+      "taking_students_unknown": "#F5F5F5",
+      "taking_students_unknown_text": "#616161"
+    },
+    "borders": {
+      "default": "#E5E0D8",
+      "focus": "#A64B2A"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "'Cormorant Garamond', serif",
+      "body": "'Manrope', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-semibold tracking-tight text-[#A64B2A]",
+      "h2": "text-2xl md:text-3xl font-medium tracking-tight text-[#A64B2A]",
+      "h3": "text-xl md:text-2xl font-medium text-[#2A2522]",
+      "h4": "text-lg font-medium text-[#2A2522]",
+      "body": "text-base text-[#2A2522] leading-relaxed",
+      "small": "text-sm text-[#5C544E]",
+      "tiny": "text-xs font-semibold tracking-[0.1em] uppercase text-[#6FA3A6]"
+    }
+  },
+  "spacing_and_layout": {
+    "general": "Generous spacing. Use p-8 or p-12 for major sections. Cards should have at least p-6.",
+    "page_structure": "Sidebar navigation (w-64) on the left, main content area taking the rest of the screen. Max width for content can be 7xl to allow dense tables to breathe.",
+    "tables": "Dense rows, tight padding (py-3 px-4). Use 1px borders (#E5E0D8) to separate rows. No zebra striping, keep it clean.",
+    "cards": "Flat solid surfaces with a delicate 1px border. No heavy drop shadows. Optional subtle shadow-sm on hover for interactive cards."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#A64B2A] text-white hover:bg-[#8A3E22] transition-colors px-6 py-2 rounded-md font-medium shadow-sm",
+      "secondary": "bg-[#F8F5F0] text-[#A64B2A] border border-[#A64B2A] hover:bg-[#F0EBE1] transition-colors px-6 py-2 rounded-md font-medium",
+      "accent": "bg-[#E6A64B] text-[#2A2522] hover:bg-[#D5963E] transition-colors px-6 py-2 rounded-md font-medium",
+      "ghost": "text-[#5C544E] hover:text-[#A64B2A] hover:bg-[#F8F5F0] transition-colors px-4 py-2 rounded-md"
+    },
+    "progress_bars": {
+      "style": "h-2 w-full bg-[#E5E0D8] rounded-full overflow-hidden",
+      "fill": "bg-gradient-to-r from-[#6FA3A6] to-[#A64B2A] h-full rounded-full transition-all duration-500 ease-out"
+    },
+    "badges": {
+      "style": "px-2.5 py-0.5 rounded-full text-xs font-medium border"
+    },
+    "inputs": {
+      "style": "bg-[#FDFCFB] border border-[#E5E0D8] rounded-md px-4 py-2 text-[#2A2522] focus:outline-none focus:ring-2 focus:ring-[#6FA3A6]/50 focus:border-[#6FA3A6] transition-all"
+    },
+    "tabs": {
+      "style": "flex space-x-8 border-b border-[#E5E0D8] mb-8",
+      "item_active": "pb-4 border-b-2 border-[#A64B2A] text-[#A64B2A] font-medium transition-colors",
+      "item_inactive": "pb-4 text-[#8A8179] hover:text-[#5C544E] transition-colors"
+    }
+  },
+  "visual_enhancers": {
+    "icons": "Use @phosphor-icons/react for a clean, academic, slightly technical feel.",
+    "borders": "Rely on crisp 1px borders (#E5E0D8) for separation rather than shadows.",
+    "empty_states": "Use simple, elegant layouts with an oversized Phosphor icon in Teal (#6FA3A6), a heading, and a muted description."
+  },
+  "animations": {
+    "hover": "Subtle transform (-translate-y-[1px]) and color transitions on interactive elements.",
+    "lists": "Staggered fade-in (using Framer Motion) for table rows and outreach cards.",
+    "progress": "Width transition on load for score bars."
+  },
+  "accessibility": {
+    "contrast": "Ensure all text against the off-white background meets WCAG AA standards. The Burnt Orange (#A64B2A) and dark text (#2A2522) provide excellent contrast.",
+    "focus": "All interactive elements must have a visible focus ring (focus:ring-2 focus:ring-[#6FA3A6]/50 focus:outline-none).",
+    "motion": "Respect prefers-reduced-motion for the progress bar animations and list staggers."
+  },
+  "media": {
+    "images": {
+      "profile_avatar": {
+        "url": "https://images.unsplash.com/photo-1655249493799-9cee4fe983bb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGluZGlhbiUyMHdvbWFufGVufDB8fHx8MTc4NDUxMTA3Mnww&ixlib=rb-4.1.0&q=85",
+        "description": "Profile picture for the user, Radhika Chhabria."
+      }
+    }
+  },
+  "instructions_to_main_agent": [
+    "Install and use @phosphor-icons/react for all iconography.",
+    "Set up Tailwind configuration to include the custom color palette (e.g., brand-primary: #A64B2A, brand-secondary: #E6A64B, brand-accent: #6FA3A6, page-bg: #F8F5F0).",
+    "Include 'Cormorant Garamond' and 'Manrope' from Google Fonts in the index.html or global CSS.",
+    "Implement the 'Find Professors' button with a loading state (spinner or pulsating effect).",
+    "In the Discover tab table, the 5 score columns (research fit, methods overlap, lab activity, program strength, overall) MUST be rendered as progress bars.",
+    "Implement the Outreach tab with collapsible cards for each professor. Each card should have the workflow sequence clearly delineated (Generate Brief -> Generate Package -> Email Text Area -> Actions).",
+    "History tab should be a clean timeline or list view with inline toggles for 'Response received' and 'Interested'.",
+    "Do NOT use generic glassmorphism. Stick to the 'Academic Precision' aesthetic with flat, solid white cards on the off-white background.",
+    "Ensure the layout is highly functional and dense where needed (tables), but generous with padding in forms and profile settings.",
+    "All forms (Profile/Settings) should have clear labels, adequately spaced inputs, and descriptive helper text.",
+    "Add 'data-testid' attributes to all interactive elements (buttons, inputs, toggles) for testing purposes."
+  ],
+  "universal_guidelines": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy and crisp borders.",
+    "NEVER apply universal transition (e.g., transition: all). Add transitions for specific interactive elements.",
+    "Do NOT center align the app container (.App { text-align: center; }).",
+    "Every interaction needs micro-animations - hover states, transitions, and entrance animations.",
+    "Use sonner for toast notifications.",
+    "Ensure text contrast ratios meet APCA/WCAG standards."
+  ]
+}
